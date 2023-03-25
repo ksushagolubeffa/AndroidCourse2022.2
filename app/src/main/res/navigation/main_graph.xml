@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/searchingFragment"
-        android:name="com.example.homework1.fragments.SearchingFragment"
+        android:name="com.example.homework1.presentation.ui.SearchingFragment"
         android:label="SearchingFragment"
         tools:layout="@layout/fragment_searching">
         <action
@@ -24,7 +24,7 @@
 
     <fragment
         android:id="@+id/infoFragment"
-        android:name="com.example.homework1.fragments.InfoFragment"
+        android:name="com.example.homework1.presentation.ui.InfoFragment"
         android:label="InfoFragment"
         tools:layout="@layout/fragment_info">
         <action

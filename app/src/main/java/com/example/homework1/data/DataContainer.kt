@@ -2,6 +2,9 @@ package com.example.homework1.data
 
 import com.example.homework1.BuildConfig
 import com.example.homework1.data.interceptor.ApiKeyInterceptor
+import com.example.homework1.domain.repository.WeatherRepository
+import com.example.homework1.domain.usecase.WeatherListUseCase
+import com.example.homework1.domain.usecase.WeatherUseCase
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -35,4 +38,15 @@ object DataContainer {
     }
 
     val weatherApi = retrofit.create(WeatherApi::class.java)
+
+    private val weatherRepository: WeatherRepository = WeatherRepositoryImpl(
+        api = weatherApi,
+    )
+
+    val weatherListUseCase: WeatherListUseCase = WeatherListUseCase(
+        repository = weatherRepository
+    )
+    val weatherUseCase: WeatherUseCase = WeatherUseCase(
+        repository= weatherRepository
+    )
 }
