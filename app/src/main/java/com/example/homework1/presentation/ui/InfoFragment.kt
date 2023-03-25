@@ -98,7 +98,7 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
     }
 
     private fun initObservers() {
-        viewModel.weather.observe(viewLifecycleOwner) { it ->
+        viewModel.weather.observe(viewLifecycleOwner) {
             it.fold(
                 onSuccess =
                 {
