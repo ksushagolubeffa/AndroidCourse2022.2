@@ -10,25 +10,27 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.homework1.App
 import com.example.homework1.R
-import com.example.homework1.data.DataContainer
-import com.example.homework1.data.WeatherRepositoryImpl
+import com.example.homework1.databinding.FragmentInfoBinding
 import com.example.homework1.databinding.FragmentSearchingBinding
-import com.example.homework1.domain.usecase.WeatherListUseCase
-import com.example.homework1.domain.usecase.WeatherUseCase
 import com.example.homework1.presentation.rv.CityAdapter
-import com.example.homework1.presentation.utils.ViewModelFactory
 import com.example.homework1.presentation.viewmodel.SearchViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
 import timber.log.Timber
+import javax.inject.Inject
 
 class SearchingFragment : Fragment() {
 
@@ -36,33 +38,32 @@ class SearchingFragment : Fragment() {
     private lateinit var client: FusedLocationProviderClient
     private val long: Double = 104.2964
     private val lat: Double = 52.2978
+    @Inject
+    lateinit var factory: ViewModelProvider.Factory
     private var recyclerView: RecyclerView? = null
     private var searchView: SearchView? = null
-    private lateinit var viewModel: SearchViewModel
-    private val repository = WeatherRepositoryImpl(DataContainer.weatherApi)
-    private var weatherListUseCase = WeatherListUseCase(repository = repository)
-    private var weatherUseCase = WeatherUseCase(repository = repository)
+    private val viewModel: SearchViewModel by viewModels { factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        context?.also {
-            client = LocationServices.getFusedLocationProviderClient(it)
-        }
+        App.appComponent.inject(this)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        initFactory()
         initObservers()
+        context?.also{
+            client = LocationServices.getFusedLocationProviderClient(it)
+        }
         return inflater.inflate(R.layout.fragment_searching, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentSearchingBinding.bind(view)
-        recyclerView = view.findViewById(R.id.rv)
-        searchView = view.findViewById(R.id.searchView)
+        recyclerView = binding?.rv
+        searchView = binding?.searchView
         getLastLocation()
         setOnSearchViewClickListener()
         super.onViewCreated(view, savedInstanceState)
@@ -72,19 +73,20 @@ class SearchingFragment : Fragment() {
     private fun setOnSearchViewClickListener() {
         searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                lifecycleScope.launch {
+                lifecycleScope.launch{
                     try {
-                        weatherUseCase(query)
-                        onCityItemClick(query)
+                        viewModel.getWeather(query)
                     } catch (exception: Exception) {
-                        Snackbar.make(
-                            requireView(),
-                            "City was not found",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
+                        withContext(Dispatchers.Main){
+                            Snackbar.make(
+                                requireView(),
+                                "City was not found",
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
-
+//                onCityItemClick(query)
                 return false
             }
 
@@ -111,7 +113,6 @@ class SearchingFragment : Fragment() {
             .addOnSuccessListener { location ->
                 if (location != null) {
                     viewModel.getWeatherList(location.latitude, location.longitude)
-//                    rvCreator(location.latitude, location.longitude)
                 } else {
                     Snackbar.make(
                         requireView(),
@@ -119,7 +120,6 @@ class SearchingFragment : Fragment() {
                         Snackbar.LENGTH_SHORT
                     ).show()
                     viewModel.getWeatherList(lat, long)
-//                    rvCreator(lat, long)
                 }
             }
     }
@@ -138,28 +138,7 @@ class SearchingFragment : Fragment() {
             } != PackageManager.PERMISSION_GRANTED
         ) {
             viewModel.getWeatherList(lat, long)
-//            rvCreator(lat, long)
         }
-    }
-
-    private fun rvCreator(latitude: Double, longitude: Double) {
-        recyclerView?.run {
-            lifecycleScope.launch {
-                adapter = CityAdapter(
-                    weatherListUseCase(latitude = latitude, longitude = longitude, count = 10),
-                    glide = Glide.with(this@SearchingFragment),
-                    onItemClick = ::onCityItemClick
-                )
-            }
-        }
-    }
-
-    private fun initFactory() {
-        val factory = ViewModelFactory(DataContainer)
-        viewModel = ViewModelProvider(
-            this,
-            factory
-        )[SearchViewModel::class.java]
     }
 
     private fun initObservers() {
@@ -171,8 +150,8 @@ class SearchingFragment : Fragment() {
                 onFailure = { Timber.e("error") })
         }
         viewModel.weatherList.observe(viewLifecycleOwner) {
-            it.fold(onSuccess =
-            { listModel ->
+            it.fold(
+                onSuccess = { listModel ->
                 recyclerView?.run {
                     lifecycleScope.launch {
                         adapter = CityAdapter(

@@ -9,8 +9,10 @@ import com.example.homework1.domain.model.ListModel
 import com.example.homework1.domain.usecase.WeatherListUseCase
 import com.example.homework1.domain.usecase.WeatherUseCase
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import javax.inject.Inject
 
-class SearchViewModel(
+class SearchViewModel @Inject constructor(
     private val weatherUseCase: WeatherUseCase,
     private val weatherListUseCase: WeatherListUseCase
 ): ViewModel()  {
@@ -22,7 +24,6 @@ class SearchViewModel(
     val weatherList:LiveData<Result<ListModel>> = _weatherList
 
     private var _error: MutableLiveData<Exception> = MutableLiveData()
-    val error: LiveData<Exception> = _error
 
     fun getWeatherList(latitude:Double?,longitude:Double?){
         viewModelScope.launch {
@@ -32,6 +33,7 @@ class SearchViewModel(
             } catch (ex: Exception) {
                 _weatherList.value = Result.failure(ex)
                 _error.value = ex
+                Timber.e("SearchViewModel error")
             }
         }
     }
@@ -44,7 +46,9 @@ class SearchViewModel(
             } catch (ex: Exception) {
                 _weather.value = Result.failure(ex)
                 _error.value = ex
+                Timber.e("SearchViewModel error")
             }
         }
     }
+
 }

@@ -24,9 +24,11 @@ class CityHolder(
                 .placeholder(R.drawable.sun)
                 .error(R.drawable.sun)
                 .into(ivCity)
+
             root.setOnClickListener {
                 onItemClick(city.name)
             }
+
             var temp = city.main.temp
             if (temp < -30) {
                 txtTemp.setTextColor(R.color.very_low)

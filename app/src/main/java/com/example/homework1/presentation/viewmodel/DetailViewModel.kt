@@ -7,8 +7,9 @@ import com.example.homework1.domain.model.DetailModel
 import com.example.homework1.domain.usecase.WeatherUseCase
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class DetailViewModel(
+class DetailViewModel @Inject constructor(
     private val weatherUseCase: WeatherUseCase
 ): ViewModel() {
 
@@ -16,7 +17,6 @@ class DetailViewModel(
     val weather: LiveData<Result<DetailModel>> = _weather
 
     private var _error: MutableLiveData<Exception> = MutableLiveData()
-    val error: LiveData<Exception> = _error
 
     suspend fun getWeatherByName(city: String) {
         viewModelScope.launch {

@@ -1,8 +1,9 @@
 package com.example.homework1.data
 
 import com.example.homework1.domain.repository.WeatherRepository
+import javax.inject.Inject
 
-class WeatherRepositoryImpl(
+class WeatherRepositoryImpl @Inject constructor(
     private val api: WeatherApi
 ) : WeatherRepository
 {

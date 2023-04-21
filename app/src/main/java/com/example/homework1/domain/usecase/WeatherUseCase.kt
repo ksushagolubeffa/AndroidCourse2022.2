@@ -5,8 +5,9 @@ import com.example.homework1.domain.repository.WeatherRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class WeatherUseCase(
+class WeatherUseCase @Inject constructor(
     private val repository: WeatherRepository,
     private val scope: CoroutineDispatcher = Dispatchers.Main
 ) {

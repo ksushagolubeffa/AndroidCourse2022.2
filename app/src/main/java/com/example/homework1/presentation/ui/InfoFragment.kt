@@ -2,45 +2,55 @@ package com.example.homework1.presentation.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.example.homework1.App
 import com.example.homework1.R
-import com.example.homework1.data.DataContainer
-import com.example.homework1.data.WeatherRepositoryImpl
 import com.example.homework1.databinding.FragmentInfoBinding
 import com.example.homework1.domain.model.DetailModel
-import com.example.homework1.domain.usecase.WeatherUseCase
-import com.example.homework1.presentation.utils.ViewModelFactory
 import com.example.homework1.presentation.viewmodel.DetailViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
+import javax.inject.Inject
 
 class InfoFragment : Fragment(R.layout.fragment_info) {
 
     private var binding: FragmentInfoBinding? = null
-    private val repository = WeatherRepositoryImpl(DataContainer.weatherApi)
-    private lateinit var viewModel: DetailViewModel
-    private var detailModel: DetailModel? = null
-    private var weatherUseCase = WeatherUseCase(repository = repository)
+    @Inject
+    lateinit var factory: ViewModelProvider.Factory
+    private val viewModel: DetailViewModel by viewModels { factory }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initFactory()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        App.appComponent.inject(this)
+        activity?.onBackPressedDispatcher?.addCallback(this,onBackPressedCallback)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentInfoBinding.inflate(layoutInflater)
         initObservers()
-        binding = FragmentInfoBinding.bind(view)
         val name = arguments?.getString("CITY_NAME")!!
         initWeather(name)
+        return binding?.root
     }
 
     @SuppressLint("SetTextI18n", "SimpleDateFormat")
-    private fun loadWeather(query: String): String? {
+    private fun loadWeather(city: DetailModel): String? {
         var event: String? = null
         lifecycleScope.launch {
             try {
-                weatherUseCase(query).also {
+                city.also {
                     binding?.txtName?.text = it.name
                     binding?.txtTemp?.text = "${it.main.temp.toInt()} °C"
                     binding?.txtDesc?.text = it.weather.firstOrNull()?.description
@@ -102,24 +112,27 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
             it.fold(
                 onSuccess =
                 {
-                    detailModel = it
-                    loadWeather(it.name)
+                    loadWeather(it)
                 },
                 onFailure = { Timber.e("error") })
         }
     }
 
-    private fun initFactory() {
-        val factory = ViewModelFactory(DataContainer)
-        viewModel = ViewModelProvider(
-            this,
-            factory
-        )[DetailViewModel::class.java]
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            findNavController().navigate(R.id.action_infoFragment_to_searchingFragment)
+        }
     }
+
 
     private fun initWeather(cityTitle: String) {
         lifecycleScope.launch {
             viewModel.getWeatherByName(cityTitle)
         }
+    }
+
+    override fun onDestroy() {
+        binding = null
+        super.onDestroy()
     }
 }
