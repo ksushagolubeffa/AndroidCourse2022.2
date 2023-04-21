@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.homework1.App
 import com.example.homework1.R
-import com.example.homework1.databinding.FragmentInfoBinding
 import com.example.homework1.databinding.FragmentSearchingBinding
 import com.example.homework1.presentation.rv.CityAdapter
 import com.example.homework1.presentation.viewmodel.SearchViewModel
@@ -28,7 +27,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
 import timber.log.Timber
 import javax.inject.Inject
 

@@ -97,7 +97,6 @@ dependencies {
     implementation "com.google.dagger:dagger-android:$dagger"
     kapt "com.google.dagger:dagger-compiler:$dagger"
     kapt "com.google.dagger:dagger-android-processor:$dagger"
-
     kapt  "com.google.dagger:dagger-android-support:$dagger"
 
     testImplementation 'junit:junit:4.13.2'
