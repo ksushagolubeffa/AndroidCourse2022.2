@@ -4,12 +4,13 @@ import com.example.homework1.data.WeatherRepositoryImpl
 import com.example.homework1.domain.repository.WeatherRepository
 import dagger.Binds
 import dagger.Module
-import javax.inject.Singleton
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
+@InstallIn(SingletonComponent::class)
 @Module
 interface RepositoryModule {
 
     @Binds
-    @Singleton
     fun provideWeatherRepository(weatherRepositoryImpl: WeatherRepositoryImpl): WeatherRepository
 }

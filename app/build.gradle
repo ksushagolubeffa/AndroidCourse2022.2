@@ -4,6 +4,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt").version("1.22.0")
     id 'kotlin-kapt'
     id 'kotlin-android-extensions'
+    id 'com.google.dagger.hilt.android'
 }
 
 android {
@@ -41,6 +42,9 @@ android {
 
     viewBinding {
         enabled true
+    }
+    dataBinding{
+        enabled = true
     }
 }
 
@@ -98,6 +102,8 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$dagger"
     kapt "com.google.dagger:dagger-android-processor:$dagger"
     kapt  "com.google.dagger:dagger-android-support:$dagger"
+    implementation("com.google.dagger:hilt-android:${dagger}")
+    kapt("com.google.dagger:hilt-android-compiler:${dagger}")
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

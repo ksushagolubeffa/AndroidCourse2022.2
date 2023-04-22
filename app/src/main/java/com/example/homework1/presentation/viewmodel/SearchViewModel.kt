@@ -8,10 +8,12 @@ import com.example.homework1.domain.model.DetailModel
 import com.example.homework1.domain.model.ListModel
 import com.example.homework1.domain.usecase.WeatherListUseCase
 import com.example.homework1.domain.usecase.WeatherUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
+@HiltViewModel
 class SearchViewModel @Inject constructor(
     private val weatherUseCase: WeatherUseCase,
     private val weatherListUseCase: WeatherListUseCase

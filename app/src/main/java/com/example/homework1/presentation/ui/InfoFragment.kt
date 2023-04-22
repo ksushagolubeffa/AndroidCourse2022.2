@@ -5,34 +5,36 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import com.example.homework1.App
 import com.example.homework1.R
 import com.example.homework1.databinding.FragmentInfoBinding
 import com.example.homework1.domain.model.DetailModel
 import com.example.homework1.presentation.viewmodel.DetailViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class InfoFragment : Fragment(R.layout.fragment_info) {
 
     private var binding: FragmentInfoBinding? = null
-    @Inject
-    lateinit var factory: ViewModelProvider.Factory
-    private val viewModel: DetailViewModel by viewModels { factory }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        App.appComponent.inject(this)
-        activity?.onBackPressedDispatcher?.addCallback(this,onBackPressedCallback)
+    private val city: String by lazy {
+        arguments?.getString("CITY_NAME")?: ""
     }
+    @Inject
+    lateinit var factory: DetailViewModel.Factory
+    private val viewModel: DetailViewModel by viewModels {
+        DetailViewModel.provideFactory(factory, city)
+    }
+
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        activity?.onBackPressedDispatcher?.addCallback(this,onBackPressedCallback)
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,8 +42,7 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
     ): View? {
         binding = FragmentInfoBinding.inflate(layoutInflater)
         initObservers()
-        val name = arguments?.getString("CITY_NAME")!!
-        initWeather(name)
+        initWeather()
         return binding?.root
     }
 
@@ -118,21 +119,30 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
         }
     }
 
-    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            findNavController().navigate(R.id.action_infoFragment_to_searchingFragment)
-        }
-    }
+//    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+//        override fun handleOnBackPressed() {
+//            findNavController().navigate(R.id.action_infoFragment_to_searchingFragment)
+//        }
+//    }
 
 
-    private fun initWeather(cityTitle: String) {
+    private fun initWeather() {
         lifecycleScope.launch {
-            viewModel.getWeatherByName(cityTitle)
+            viewModel.getWeatherByName()
         }
     }
 
     override fun onDestroy() {
         binding = null
         super.onDestroy()
+    }
+
+    companion object {
+        fun newInstance(param1: String) =
+            InfoFragment().apply {
+                arguments = Bundle().apply {
+                    putString("CITY_NAME", param1)
+                }
+            }
     }
 }

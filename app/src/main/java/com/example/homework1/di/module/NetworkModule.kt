@@ -2,30 +2,30 @@ package com.example.homework1.di.module
 
 import com.example.homework1.BuildConfig
 import com.example.homework1.data.WeatherApi
+import com.example.homework1.di.qualifier.ApiKeyInterceptor
+import com.example.homework1.di.qualifier.LoggingInterceptor
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Named
-import javax.inject.Singleton
 
 @Module
+@InstallIn(SingletonComponent::class)
 class NetworkModule {
 
     @Provides
-    @Singleton
-    @Named("apiKeyInt")
-    fun provideApiKeyInterceptor(
-        @Named ("apiKey") apiKey: String
-    ): Interceptor =
+    @ApiKeyInterceptor
+    fun apiKeyInterceptor(): Interceptor =
         Interceptor{
                 chain ->
             val originalRequest = chain.request()
             originalRequest.url.newBuilder()
-                .addQueryParameter("apiKey", apiKey)
+                .addQueryParameter("apiKey", API_KEY)
                 .build()
                 .let {
                     chain.proceed(
@@ -34,8 +34,7 @@ class NetworkModule {
         }
 
     @Provides
-    @Singleton
-    @Named("logger")
+    @LoggingInterceptor
     fun provideLoggingInterceptor(): Interceptor {
         return HttpLoggingInterceptor()
             .setLevel(
@@ -44,10 +43,9 @@ class NetworkModule {
     }
 
     @Provides
-    @Singleton
-    fun provideHttpClient(
-        @Named("apiKeyInt") apiKeyInterceptor: Interceptor,
-        @Named("logger") loggingInterceptor: Interceptor,
+    fun provideOkhttp(
+        @ApiKeyInterceptor apiKeyInterceptor: Interceptor,
+        @LoggingInterceptor loggingInterceptor: Interceptor,
     ): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(apiKeyInterceptor)
@@ -59,30 +57,21 @@ class NetworkModule {
             .build()
 
     @Provides
-    @Singleton
     fun provideGsonConverter(): GsonConverterFactory = GsonConverterFactory.create()
 
     @Provides
-    @Singleton
     fun provideWeatherApi(
         okHttpClient: OkHttpClient,
         gsonConverter: GsonConverterFactory,
-        @Named ("baseUrl") baseUrl: String,
     ): WeatherApi = Retrofit.Builder()
-        .baseUrl(baseUrl)
+        .baseUrl(API_URL)
         .client(okHttpClient)
         .addConverterFactory(gsonConverter)
         .build()
         .create(WeatherApi::class.java)
 
-    @Provides
-    @Singleton
-    @Named("baseUrl")
-    fun provideBaseUrl(): String = BuildConfig.API_ENDPOINT
-
-    @Provides
-    @Singleton
-    @Named("apiKey")
-    fun provideApiKey(): String = BuildConfig.API_KEY
-
+    companion object{
+        private const val API_URL = BuildConfig.API_ENDPOINT
+        private const val API_KEY = BuildConfig.API_KEY
+    }
 }

@@ -11,12 +11,9 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.homework1.App
 import com.example.homework1.R
 import com.example.homework1.databinding.FragmentSearchingBinding
 import com.example.homework1.presentation.rv.CityAdapter
@@ -24,35 +21,27 @@ import com.example.homework1.presentation.viewmodel.SearchViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
-import javax.inject.Inject
 
+@AndroidEntryPoint
 class SearchingFragment : Fragment() {
 
     private var binding: FragmentSearchingBinding? = null
     private lateinit var client: FusedLocationProviderClient
     private val long: Double = 104.2964
     private val lat: Double = 52.2978
-    @Inject
-    lateinit var factory: ViewModelProvider.Factory
+    private val viewModel: SearchViewModel by viewModels()
     private var recyclerView: RecyclerView? = null
     private var searchView: SearchView? = null
-    private val viewModel: SearchViewModel by viewModels { factory }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        App.appComponent.inject(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         initObservers()
-        context?.also{
+        context?.also {
             client = LocationServices.getFusedLocationProviderClient(it)
         }
         return inflater.inflate(R.layout.fragment_searching, container, false)
@@ -65,26 +54,29 @@ class SearchingFragment : Fragment() {
         getLastLocation()
         setOnSearchViewClickListener()
         super.onViewCreated(view, savedInstanceState)
-
     }
 
     private fun setOnSearchViewClickListener() {
         searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                lifecycleScope.launch{
+                lifecycleScope.launch {
                     try {
                         viewModel.getWeather(query)
+                        parentFragmentManager
+                            .beginTransaction()
+                            .replace(R.id.container,
+                                InfoFragment.newInstance(query)
+                            )
+                            .addToBackStack(null)
+                            .commit()
                     } catch (exception: Exception) {
-                        withContext(Dispatchers.Main){
-                            Snackbar.make(
-                                requireView(),
-                                "City was not found",
+                        Snackbar.make(
+                            requireView(),
+                            "City was not found",
                                 Snackbar.LENGTH_SHORT
                             ).show()
-                        }
                     }
                 }
-//                onCityItemClick(query)
                 return false
             }
 
@@ -92,16 +84,6 @@ class SearchingFragment : Fragment() {
                 return false
             }
         })
-    }
-
-    private fun onCityItemClick(name: String) {
-        var bundle: Bundle?
-        name.also {
-            bundle = Bundle().apply {
-                putString("CITY_NAME", name)
-            }
-        }
-        findNavController().navigate(R.id.action_searchingFragment_to_infoFragment, bundle)
     }
 
     @SuppressLint("MissingPermission")
@@ -143,24 +125,39 @@ class SearchingFragment : Fragment() {
         viewModel.weather.observe(viewLifecycleOwner) {
             it.fold(
                 onSuccess = { detailModel ->
-                    onCityItemClick(detailModel.name)
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.container,
+                            InfoFragment.newInstance(detailModel.name)
+                        )
+                        .addToBackStack(null)
+                        .commit()
                 },
                 onFailure = { Timber.e("error") })
         }
         viewModel.weatherList.observe(viewLifecycleOwner) {
             it.fold(
                 onSuccess = { listModel ->
-                recyclerView?.run {
-                    lifecycleScope.launch {
-                        adapter = CityAdapter(
-                            listModel,
-                            glide = Glide.with(this@SearchingFragment),
-                            onItemClick = ::onCityItemClick
-                        )
+                    recyclerView?.run {
+                        lifecycleScope.launch {
+                            adapter = CityAdapter(
+                                listModel,
+                                glide = Glide.with(this@SearchingFragment)
+                            ){cityName ->
+                                parentFragmentManager.beginTransaction()
+                                    .replace(R.id.container,
+                                        InfoFragment.newInstance(cityName)
+                                    )
+                                    .addToBackStack(null)
+                                    .commit()
+                            }
+                        }
                     }
-                }
-            },
+                },
                 onFailure = { Timber.e("error") })
         }
+    }
+
+    companion object {
+        fun newInstance() = SearchingFragment()
     }
 }
