@@ -7,15 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.example.homework1.R
 import com.example.homework1.databinding.FragmentInfoBinding
 import com.example.homework1.domain.model.DetailModel
 import com.example.homework1.presentation.viewmodel.DetailViewModel
 import io.reactivex.rxjava3.disposables.Disposable
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 import java.text.SimpleDateFormat

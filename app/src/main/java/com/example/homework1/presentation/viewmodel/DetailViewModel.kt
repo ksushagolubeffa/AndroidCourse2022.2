@@ -8,12 +8,10 @@ import com.example.homework1.domain.model.DetailModel
 import com.example.homework1.domain.model.ListModel
 import com.example.homework1.domain.usecase.WeatherListUseCase
 import com.example.homework1.domain.usecase.WeatherUseCase
-import dagger.assisted.AssistedFactory
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class DetailViewModel @Inject constructor(

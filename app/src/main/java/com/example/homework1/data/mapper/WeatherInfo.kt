@@ -1,7 +1,5 @@
 package com.example.homework1.data.mapper
 
-import android.util.Log
-import androidx.lifecycle.Transformations.map
 import com.example.homework1.data.response.*
 import com.example.homework1.domain.model.DetailModel
 import com.example.homework1.domain.model.ListModel

@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import com.example.homework1.databinding.ItemCityBinding
-import com.example.homework1.domain.model.DetailModel
 import com.example.homework1.domain.model.ListModel
 
 class CityAdapter(
