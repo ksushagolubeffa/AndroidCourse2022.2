@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/mist"
+    tools:context=".presentation.ui.InfoFragment">
+
+    <TextView
+        android:id="@+id/txt_name"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="80dp"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:text="Irkutsk"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_temp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:text="19°C"
+        android:textColor="@color/white"
+        android:textSize="90sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txt_name" />
+
+    <TextView
+        android:id="@+id/txt_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:text="few clouds: 11-25%"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txt_temp" />
+
+    <TextView
+        android:id="@+id/txt_tmp_m"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:text="Min: 13°C; Max: 29°C"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txt_desc" />
+
+    <TextView
+        android:id="@+id/txt_h"
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginBottom="20dp"
+        android:background="@color/tv_color"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:text="Humidity: 62%"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@id/txt_pres"
+        app:layout_constraintEnd_toStartOf="@id/txt_dir"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_dir"
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@color/tv_color"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:text="Direction: SW"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@id/txt_rise"
+        app:layout_constraintEnd_toStartOf="@id/txt_speed"
+        app:layout_constraintStart_toEndOf="@+id/txt_h" />
+
+    <TextView
+        android:id="@+id/txt_speed"
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="20dp"
+        android:background="@color/tv_color"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:text="Speed :       5 m/s"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@id/txt_set"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/txt_dir" />
+
+    <TextView
+        android:id="@+id/txt_pres"
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginBottom="40dp"
+        android:background="@color/tv_color"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:text="Pressure: 720 mm"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/txt_rise"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_rise"
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="40dp"
+        android:background="@color/tv_color"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:text="Sunrise: 07:59"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/txt_set"
+        app:layout_constraintStart_toEndOf="@id/txt_pres" />
+
+    <TextView
+        android:id="@+id/txt_set"
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="40dp"
+        android:background="@color/tv_color"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:text="Sunset: 18:32"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/txt_rise" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
